@@ -13,8 +13,9 @@ public class PatoModel {
     @Column(nullable = false)
     private String nome;
 
-    @Column(nullable = false)
-    private String nomeMae;
+    @ManyToOne
+    @JoinColumn(name = "mae_id")
+    private PatoModel mae;
 
     @Column(nullable = false)
     private double valor;
@@ -41,12 +42,12 @@ public class PatoModel {
         this.nome = nome;
     }
 
-    public String getNomeMae() {
-        return nomeMae;
+    public PatoModel getMae() {
+        return mae;
     }
 
-    public void setNomeMae(String nomeMae) {
-        this.nomeMae = nomeMae;
+    public void setMae(PatoModel mae) {
+        this.mae = mae;
     }
 
     public double getValor() {
