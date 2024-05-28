@@ -47,40 +47,40 @@ public class RelatorioService {
 
         document.add(new Paragraph("GERENCIAMENTO DE PATOS"));
 
-        Table table = new Table(6);
-        table.addCell("Nome Pato");
-        table.addCell("Nome da Mãe do Pato");
+        Table table = new Table(5);
+        table.addCell("Nome");
         table.addCell("Status");
         table.addCell("Cliente");
-        table.addCell("Tipo do cliente");
+        table.addCell("Tipo do Cliente");
         table.addCell("Valor");
 
         for (PatoModel pato : patos) {
             if (pato.getStatus() == PatoStatus.VENDIDO || pato.getStatus() == PatoStatus.DISPONIVEL) {
-                VendaModel venda = vendas.stream().filter(v -> v.getPato().getId().equals(pato.getId())).findFirst().orElse(null);
+                VendaModel venda = vendas.stream()
+                        .filter(v -> v.getPato().getId().equals(pato.getId()))
+                        .findFirst().orElse(null);
 
-                if (venda != null || pato.getStatus() == PatoStatus.DISPONIVEL) {
-                    ClienteModel cliente = venda != null ? venda.getCliente() : null;
-                    double valor = pato.getValor();
+                String maeNome = pato.getMae() != null ? pato.getMae().getNome() : "N/A";
+                double valor = pato.getValor();
+                String tipoCliente = "";
+                String clienteNome = "";
 
-                    // Verifica se o cliente tem desconto apenas se o pato estiver vendido
-                    String tipoCliente = "";
-                    if (venda != null && cliente != null) {
-                        if (cliente.getElegivel() == ClienteElegivel.COM_DESCONTO) {
-                            valor *= 0.8; // Aplica desconto de 20%
-                            tipoCliente = "com Desconto";
-                        } else {
-                            tipoCliente = "sem Desconto";
-                        }
+                if (venda != null) {
+                    ClienteModel cliente = venda.getCliente();
+                    clienteNome = cliente.getNome();
+                    if (cliente.getElegivel() == ClienteElegivel.COM_DESCONTO) {
+                        valor *= 0.8; // Aplica desconto de 20%
+                        tipoCliente = "com Desconto";
+                    } else {
+                        tipoCliente = "sem Desconto";
                     }
-
-                    table.addCell(pato.getNome());
-                    table.addCell(pato.getNomeMae());
-                    table.addCell(pato.getStatus().toString());
-                    table.addCell(cliente != null ? cliente.getNome() : "");
-                    table.addCell(tipoCliente);
-                    table.addCell(CURRENCY_FORMAT.format(valor));
                 }
+
+                table.addCell(pato.getNome() + " (Mãe: " + maeNome + ")");
+                table.addCell(pato.getStatus().toString());
+                table.addCell(clienteNome);
+                table.addCell(tipoCliente);
+                table.addCell(CURRENCY_FORMAT.format(valor));
             }
         }
 
@@ -128,7 +128,6 @@ public class RelatorioService {
 
                     Row row = sheet.createRow(rowNum++);
                     row.createCell(0).setCellValue(pato.getNome());
-                    row.createCell(1).setCellValue(pato.getNomeMae());
                     row.createCell(2).setCellValue(pato.getStatus().toString());
                     row.createCell(3).setCellValue(cliente != null ? cliente.getNome() : "");
                     row.createCell(4).setCellValue(tipoCliente);

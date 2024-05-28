@@ -1,5 +1,6 @@
 package com.granjadepatos.service;
 
+import com.granjadepatos.DTO.PatoDTO;
 import com.granjadepatos.model.PatoModel;
 import com.granjadepatos.repository.PatoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,11 @@ public class PatoService {
         return new PatoModel();
     }
 
-    public PatoModel setPato(PatoModel pato) {
+    public PatoModel setPato(PatoModel pato, Long maeId) {
+        if (maeId != null) {
+            PatoModel mae = patoRepository.findById(maeId).orElse(null);
+            pato.setMae(mae);
+        }
         return patoRepository.save(pato);
     }
 

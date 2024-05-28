@@ -1,5 +1,6 @@
 package com.granjadepatos.controller;
 
+import com.granjadepatos.DTO.PatoDTO;
 import com.granjadepatos.model.PatoModel;
 import com.granjadepatos.service.PatoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,13 +35,17 @@ public class PatoController {
     }
 
     @PostMapping
-    ResponseEntity<PatoModel> setPato(@RequestBody PatoModel pato) {
-        patoService.setPato(pato);
-        return ResponseEntity.created(null).body(pato);
+    public ResponseEntity<PatoModel> setPato(@RequestBody PatoDTO patoDTO) {
+        PatoModel pato = new PatoModel();
+        pato.setNome(patoDTO.getNome());
+        pato.setValor(patoDTO.getValor());
+        pato.setStatus(patoDTO.getStatus());
+        PatoModel savedPato = patoService.setPato(pato, patoDTO.getMaeId());
+        return ResponseEntity.created(null).body(savedPato);
     }
 
     @PutMapping("/{id}")
-    ResponseEntity<PatoModel> setSituacao(@RequestBody PatoModel pato, @PathVariable Long id){
+    ResponseEntity<PatoModel> putPato(@RequestBody PatoModel pato, @PathVariable Long id){
         try {
             return ResponseEntity.accepted().body(patoService.putPato(id, pato));
         } catch (Exception e){
